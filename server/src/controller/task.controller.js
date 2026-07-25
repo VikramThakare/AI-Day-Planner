@@ -6,11 +6,12 @@ const {
     deleteTask: deleteTaskService,
 } = require("../services/task.service");
 
-
-
 const createTask = async (req, res) => {
     try {
-        const task = await createTaskService(req.body);
+        const task = await createTaskService({
+            ...req.body,
+            user: req.user._id,
+        });
 
         res.status(201).json({
             success: true,
@@ -26,7 +27,7 @@ const createTask = async (req, res) => {
 
 const getTasks = async (req, res) => {
     try {
-        const tasks = await getAllTasks();
+        const tasks = await getAllTasks(req.user._id);
 
         res.status(200).json({
             success: true,
@@ -42,7 +43,10 @@ const getTasks = async (req, res) => {
 
 const getTask = async (req, res) => {
     try {
-        const task = await getTaskById(req.params.id);
+        const task = await getTaskById(
+            req.params.id,
+            req.user._id
+        );
 
         if (!task) {
             return res.status(404).json({
@@ -65,7 +69,11 @@ const getTask = async (req, res) => {
 
 const updateTask = async (req, res) => {
     try {
-        const task = await updateTaskService(req.params.id, req.body);
+        const task = await updateTaskService(
+            req.params.id,
+            req.user._id,
+            req.body
+        );
 
         if (!task) {
             return res.status(404).json({
@@ -88,7 +96,10 @@ const updateTask = async (req, res) => {
 
 const deleteTask = async (req, res) => {
     try {
-        const task = await deleteTaskService(req.params.id);
+        const task = await deleteTaskService(
+            req.params.id,
+            req.user._id
+        );
 
         if (!task) {
             return res.status(404).json({
@@ -116,4 +127,3 @@ module.exports = {
     updateTask,
     deleteTask,
 };
-
